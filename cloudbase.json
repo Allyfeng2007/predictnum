@@ -1,5 +1,5 @@
 {
-  "envId": "你的环境ID",
+  "envId": "prod-6geucygt87d9bdb7",
   "service": {
     "name": "ml-prediction-service",
     "containerPort": 80,

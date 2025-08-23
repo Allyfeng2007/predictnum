@@ -10,8 +10,8 @@ CORS(app)
 # 加载模型
 model = joblib.load('linreg.model')
 
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.route('/predictnum', methods=['POST'])
+def predictnum():
     """预测接口"""
     data = request.get_json()
     
@@ -40,4 +40,4 @@ def predict():
     })
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    app.run(host='0.0.0.0', port=80, debug=False)
