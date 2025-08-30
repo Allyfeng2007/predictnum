@@ -19,7 +19,7 @@ def load_model():
         app.logger.exception(f"模型加载失败: {e}")
         raise
 
-# ✅ 用 before_first_request（更符合你的注释）
+# before_request在每一次请求进入你的应用、匹配到路由之前都会先执行这个函数。典型用途：鉴权、打开数据库连接、懒加载模型、设置请求级别上下文等
 @app.before_request
 def _load_once():
     global model_loaded
@@ -32,31 +32,19 @@ def health_check():
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    if not model_loaded or model is None:
+        return jsonify({'error': '模型未加载，请稍后重试'}), 503
+
+    data = request.get_json(silent=True)
+    if not data or 'features' not in data:
+        return jsonify({'error': 'Missing features field'}), 400
+
     try:
-        if not model_loaded or model is None:
-            return jsonify({'error': '模型未加载，请稍后重试'}), 503
-
-        data = request.get_json(silent=True)
-        if not data or 'features' not in data:
-            return jsonify({'error': 'Missing features field'}), 400
-
         features = data['features']
-
-        if len(features) != 3:
-            return jsonify({'error': '需要3个特征值'}), 400
-        if not all(isinstance(x, (int, float)) for x in features):
-            return jsonify({'error': '特征值必须为数字'}), 400
-
-        # ✅ 用 numpy，避免特征名问题
         X = np.array(features, dtype=float).reshape(1, -1)
         pred = model.predict(X)[0]
+        return jsonify({'prediction': float(pred)})
 
-        # ✅ 去掉这个返回末尾的逗号！
-        return jsonify({
-            'success': True,
-            'prediction': float(pred),
-            'features': features
-        })
     except Exception as e:
         app.logger.exception(f"/predict 出错: {e}")
         return jsonify({'error': str(e)}), 500
