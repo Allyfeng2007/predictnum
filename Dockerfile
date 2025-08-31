@@ -31,4 +31,4 @@ EXPOSE 80
 
 # 启动 Web 服务
 # 如果您的容器实例拥有多个 CPU 核心，我们推荐您把线程数设置为与 CPU 核心数一致
-CMD exec gunicorn --bind :80 --workers ${GUNICORN_WORKERS} --threads ${GUNICORN_THREADS} --timeout ${GUNICORN_TIMEOUT} main:app
+CMD exec gunicorn --bind :80 --workers ${GUNICORN_WORKERS} --threads ${GUNICORN_THREADS} --timeout ${GUNICORN_TIMEOUT} app:app
